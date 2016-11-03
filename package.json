@@ -2,15 +2,14 @@
   "name": "node-peripheral",
   "version": "0.0.1",
   "description": "Bluetooth LE peripheral module",
-  "main": "index.js",
+  "main": "./app/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node ."
   },
-  "author": "Philipp Hager",
+  "author": "Dane Podzkiewitz, Philipp Hager",
   "license": "ISC",
   "dependencies": {
-    "bleno": "^0.4.1",
-    "bluebird": "^3.4.6"
+    "bleno": "^0.4.1"
   }
 }
