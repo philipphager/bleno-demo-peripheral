@@ -1,33 +1,26 @@
-// app/index.js
-var bleno = require('bleno');
+// Dependencies ---------------------------------------------------------------
+const bleno = require('bleno'),
+    humidityService = require('./humidity.js');
 
-var BlenoPrimaryService = bleno.PrimaryService;
+// Events ---------------------------------------------------------------------
+bleno.on('stateChange', (state) => {
+    console.log(`State changed: ${state}`);
 
-var HelloWorldCharacteristic = require('./characteristic');
+    if (state === 'poweredOn') {
+        console.log("Start advertising");
+        bleno.startAdvertising(humidityService.name, [humidityService.uuid]);
+    } else {
+        bleno.stopAdvertising();
+    }
 
-console.log('bleno - hello world service');
-
-bleno.on('stateChange', function(state) {
-  console.log('on -> stateChange: ' + state);
-
-  if (state === 'poweredOn') {
-    bleno.startAdvertising('hello world service', ['ec00']);
-  } else {
-    bleno.stopAdvertising();
-  }
 });
 
-bleno.on('advertisingStart', function(error) {
-  console.log('on -> advertisingStart: ' + (error ? 'error ' + error : 'success'));
+bleno.on('advertisingStart', (err) => {
+    console.log(`Advertising started`);
 
-  if (!error) {
-    bleno.setServices([
-      new BlenoPrimaryService({
-        uuid: 'ec00',
-        characteristics: [
-          new HelloWorldCharacteristic()
-        ]
-      })
-    ]);
-  }
+    if(!err) {
+        bleno.setServices([humidityService]);
+    } else {
+        console.log(`Error: ${err}`);
+    }
 });
