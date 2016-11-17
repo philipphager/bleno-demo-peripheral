@@ -1,6 +1,11 @@
 // Dependencies ---------------------------------------------------------------
 const bleno = require('bleno'),
+    infoService = require('./info'),
     humidityService = require('./humidity.js');
+
+// Config ---------------------------------------------------------------------
+const PERIPHERAL_NAME = 'plant-a-lot';
+const SERVICES = [infoService, humidityService];
 
 // Events ---------------------------------------------------------------------
 bleno.on('stateChange', (state) => {
@@ -8,18 +13,18 @@ bleno.on('stateChange', (state) => {
 
     if (state === 'poweredOn') {
         console.log("Start advertising");
-        bleno.startAdvertising(humidityService.name, [humidityService.uuid]);
+        let serviceIds = SERVICES.map(service => service.uuid);
+        bleno.startAdvertising(PERIPHERAL_NAME, serviceIds);
     } else {
         bleno.stopAdvertising();
     }
-
 });
 
 bleno.on('advertisingStart', (err) => {
     console.log(`Advertising started`);
 
-    if(!err) {
-        bleno.setServices([humidityService]);
+    if (!err) {
+        bleno.setServices(SERVICES);
     } else {
         console.log(`Error: ${err}`);
     }
