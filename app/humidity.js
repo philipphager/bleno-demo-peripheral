@@ -5,7 +5,7 @@ const bleno = require('bleno');
 class HumidityCharacteristic extends bleno.Characteristic {
     constructor() {
         super({
-            uuid: 'ec0e',
+            uuid: '5ce4c37b-1229-48e1-a984-179945720002',
             properties: ['read', 'write', 'notify'],
             value: null
         });
@@ -44,7 +44,7 @@ HumidityCharacteristic.prototype.onUnsubscribe = function () {
 
 // Service -------------------------------------------------------------------
 let humidityService = new bleno.PrimaryService({
-    uuid: '5ce4c37b-1229-48e1-a984-179945726aae',
+    uuid: '5ce4c37b-1229-48e1-a984-179945720001',
     characteristics: [
         new HumidityCharacteristic()
     ]
