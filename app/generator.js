@@ -1,7 +1,6 @@
 class Generator {
     getValue() {
-        let rand = Math.random();
-        return Math.round(rand * 100) / 100;
+        return Math.random().toFixed(2);
     }
 }
 

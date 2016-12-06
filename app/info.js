@@ -1,11 +1,15 @@
 // Dependencies ---------------------------------------------------------------
 const bleno = require('bleno');
 
+// Constants ------------------------------------------------------------------
+const INFO_SERVICE = 'ec0e',
+      INFO_CHARACTERISTIC = 'ec0f';
+
 // Characteristic -------------------------------------------------------------
 class InfoCharacteristic extends bleno.Characteristic {
     constructor() {
         super({
-            uuid: 'ec0f',
+            uuid: INFO_CHARACTERISTIC,
             properties: ['read'],
             value: null
         });
@@ -21,7 +25,7 @@ class InfoCharacteristic extends bleno.Characteristic {
 
 // Service --------------------------------------------------------------------
 let infoService = new bleno.PrimaryService({
-    uuid: 'ec0e',
+    uuid: INFO_SERVICE,
     characteristics: [
         new InfoCharacteristic()
     ]

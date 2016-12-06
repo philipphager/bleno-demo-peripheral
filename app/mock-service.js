@@ -2,13 +2,27 @@
 const bleno = require('bleno'),
       Generator = require('./generator');
 
+// Constants ------------------------------------------------------------------
+const ENV_SENSING_MEASUREMENT = '290c',
+      SENSOR_SERVICE = 'ec1e', 
+      SENSOR_CHARACTERISTIC = 'ec1f';
+
 // Characteristic -------------------------------------------------------------
 class MockCharacteristic extends bleno.Characteristic {
     constructor(secInterval) {
         super({
-            uuid: 'ec1f',
+            uuid: SENSOR_CHARACTERISTIC,
             properties: ['read', 'write', 'notify'],
-            value: null
+            value: null,
+            descriptors: [
+                new bleno.Descriptor({
+                    uuid: ENV_SENSING_MEASUREMENT
+                }),
+                new bleno.Descriptor({
+                    uuid: '2901',
+                    value: 'MockSensor'
+                })
+            ]
         });
 
         this._generator = new Generator();
@@ -40,7 +54,7 @@ class MockCharacteristic extends bleno.Characteristic {
         this._updateValueCallback = updateValueCallback;
         this._intervalId = setInterval(() => {
             let number = this._generator.getValue();
-            this._value.writeFloatLE(number, 0);
+            this._value.write(number);
             this._updateValueCallback(this._value);
 
             console.log(`Generate value ${number}`);
@@ -56,11 +70,10 @@ class MockCharacteristic extends bleno.Characteristic {
 
 // Service --------------------------------------------------------------------
 let mockService = new bleno.PrimaryService({
-    uuid: 'ec1e',
+    uuid: SENSOR_SERVICE,
     characteristics: [
         new MockCharacteristic(3)
-    ],
-    name: 'MockService'
+    ]
 });
 
 // Exports --------------------------------------------------------------------

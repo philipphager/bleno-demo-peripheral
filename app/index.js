@@ -7,6 +7,8 @@ const bleno = require('bleno'),
 const PERIPHERAL_NAME = 'plant-a-lot';
 const SERVICES = [infoService, mockService];
 
+process.env['BLENO_DEVICE_NAME'] = PERIPHERAL_NAME;
+
 // Events ---------------------------------------------------------------------
 bleno.on('stateChange', (state) => {
     console.log(`State changed: ${state}`);
