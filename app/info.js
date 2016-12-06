@@ -5,7 +5,7 @@ const bleno = require('bleno');
 class InfoCharacteristic extends bleno.Characteristic {
     constructor() {
         super({
-            uuid: '5ce4c37b-1229-48e1-a984-179945710002',
+            uuid: 'ec0f',
             properties: ['read'],
             value: null
         });
@@ -21,7 +21,7 @@ InfoCharacteristic.prototype.onReadRequest = function (offset, callback) {
 
 // Service -------------------------------------------------------------------
 let infoService = new bleno.PrimaryService({
-    uuid: '5ce4c37b-1229-48e1-a984-179945710001',
+    uuid: 'ec0e',
     characteristics: [
         new InfoCharacteristic()
     ]

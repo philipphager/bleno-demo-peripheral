@@ -1,11 +1,11 @@
 // Dependencies ---------------------------------------------------------------
 const bleno = require('bleno'),
     infoService = require('./info'),
-    humidityService = require('./humidity.js');
+    mockService = require('./mock-service');
 
 // Config ---------------------------------------------------------------------
 const PERIPHERAL_NAME = 'plant-a-lot';
-const SERVICES = [infoService, humidityService];
+const SERVICES = [infoService, mockService];
 
 // Events ---------------------------------------------------------------------
 bleno.on('stateChange', (state) => {
