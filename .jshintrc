@@ -1,5 +1,6 @@
 {
 	"esversion" : 6,
 	"node" : true,
-	"predef": [ "-Promise" ]
+	"predef": [ "-Promise" ],
+	"unused": true
 }

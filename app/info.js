@@ -1,7 +1,7 @@
 // Dependencies ---------------------------------------------------------------
 const bleno = require('bleno');
 
-// Characteristics ------------------------------------------------------------
+// Characteristic -------------------------------------------------------------
 class InfoCharacteristic extends bleno.Characteristic {
     constructor() {
         super({
@@ -12,14 +12,14 @@ class InfoCharacteristic extends bleno.Characteristic {
 
         this._value = Buffer.from('debug-device-id', 'ascii');
     }
+
+    onReadRequest(offset, callback) {
+        console.log(`onReadRequest: value = ${this._value.toString('ascii')}`);
+        callback(this.RESULT_SUCCESS, this._value);
+    }
 }
 
-InfoCharacteristic.prototype.onReadRequest = function (offset, callback) {
-    console.log(`onReadRequest: value = ${this._value.toString('ascii')}`);
-    callback(this.RESULT_SUCCESS, this._value);
-};
-
-// Service -------------------------------------------------------------------
+// Service --------------------------------------------------------------------
 let infoService = new bleno.PrimaryService({
     uuid: 'ec0e',
     characteristics: [
