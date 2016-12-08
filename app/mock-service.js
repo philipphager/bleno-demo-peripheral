@@ -1,11 +1,12 @@
 // Dependencies ---------------------------------------------------------------
 const bleno = require('bleno'),
-      Generator = require('./generator');
+      Generator = require('./generator'),
+      winston = require('winston');
 
 // Constants ------------------------------------------------------------------
 const ENV_SENSING_MEASUREMENT = '290c',
-      SENSOR_SERVICE = 'ec1e', 
-      SENSOR_CHARACTERISTIC = 'ec1f';
+    SENSOR_SERVICE = 'ec1e',
+    SENSOR_CHARACTERISTIC = 'ec1f';
 
 // Characteristic -------------------------------------------------------------
 class MockCharacteristic extends bleno.Characteristic {
@@ -33,16 +34,21 @@ class MockCharacteristic extends bleno.Characteristic {
     }
 
     onReadRequest(offset, callback) {
-        console.log(`onReadRequest: value = ${this._value.toString('ascii')}`);
+        winston.info('MockCharacteristic: onRead', {
+            value: this._value.toString('ascii')
+        });
+
         callback(this.RESULT_SUCCESS, this._value);
     }
 
     onWriteRequest(data, offset, withoutResponse, callback) {
         this._value = data;
-        console.log(`onWriteRequest: value = ${this._value.toString('ascii')}`);
+
+        winston.info('MockCharacteristic: onWrite', {
+            value: this._value.toString('ascii')
+        });
 
         if (this._updateValueCallback) {
-            console.log('onWriteRequest: notifying');
             this._updateValueCallback(this._value);
         }
 
@@ -50,19 +56,24 @@ class MockCharacteristic extends bleno.Characteristic {
     }
 
     onSubscribe(maxValueSize, updateValueCallback) {
-        console.log('onSubscribe');
+        winston.info('MockCharacteristic: onSubscribe');
+
         this._updateValueCallback = updateValueCallback;
         this._intervalId = setInterval(() => {
             let number = this._generator.getValue();
             this._value.write(number);
             this._updateValueCallback(this._value);
 
-            console.log(`Generate value ${number}`);
+            winston.debug('MockCharacteristic: notify', {
+                value: this._value.toString('ascii')
+            });
+
         }, this._intervalInMillis);
     }
 
     onUnsubscribe() {
-        console.log('onUnsubscribe');
+        winston.info('MockCharacteristic: onUnsubscribe');
+
         this._updateValueCallback = null;
         clearInterval(this._intervalId);
     }

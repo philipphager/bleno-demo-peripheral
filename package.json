@@ -10,6 +10,7 @@
   "author": "Dane Podzkiewitz, Philipp Hager",
   "license": "ISC",
   "dependencies": {
-    "bleno": "^0.4.1"
+    "bleno": "^0.4.1",
+    "winston": "2.3.0"
   }
 }

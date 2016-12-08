@@ -1,5 +1,6 @@
 // Dependencies ---------------------------------------------------------------
-const bleno = require('bleno');
+const bleno = require('bleno'),
+      winston = require('winston');
 
 // Constants ------------------------------------------------------------------
 const INFO_SERVICE = 'ec0e',
@@ -18,7 +19,10 @@ class InfoCharacteristic extends bleno.Characteristic {
     }
 
     onReadRequest(offset, callback) {
-        console.log(`onReadRequest: value = ${this._value.toString('ascii')}`);
+        winston.info('InfoCharacteristic: onRead', {
+            value: this._value.toString('ascii')
+        });
+
         callback(this.RESULT_SUCCESS, this._value);
     }
 }
