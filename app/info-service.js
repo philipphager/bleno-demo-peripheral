@@ -3,8 +3,8 @@ const bleno = require('bleno'),
       winston = require('winston');
 
 // Constants ------------------------------------------------------------------
-const INFO_SERVICE = 'ec0e',
-      INFO_CHARACTERISTIC = 'ec0f';
+const INFO_SERVICE = 'ec00',
+      INFO_CHARACTERISTIC = 'ec01';
 
 // Characteristic -------------------------------------------------------------
 class InfoCharacteristic extends bleno.Characteristic {
