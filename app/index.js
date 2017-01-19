@@ -1,7 +1,7 @@
 // Dependencies ---------------------------------------------------------------
 const bleno = require('bleno'),
-      infoService = require('./info'),
-      mockService = require('./mock-service'),
+      infoService = require('./info-service'),
+      mockService = require('./sensor-service'),
       winston = require('winston');
 
 // Config ---------------------------------------------------------------------
