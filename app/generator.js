@@ -1,6 +1,6 @@
 class Generator {
     getValue() {
-        return Math.random().toFixed(2);
+        return Math.floor(Math.random() * 100);
     }
 }
 
