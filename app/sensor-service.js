@@ -5,14 +5,13 @@ const bleno = require('bleno'),
 
 // Constants ------------------------------------------------------------------
 const ENV_SENSING_MEASUREMENT = '290c',
-    SENSOR_SERVICE = 'ec1e',
-    SENSOR_CHARACTERISTIC = 'ec1f';
+    SENSOR_SERVICE = 'ec10';
 
 // Characteristic -------------------------------------------------------------
 class MockCharacteristic extends bleno.Characteristic {
-    constructor(secInterval) {
+    constructor(uuid, secInterval) {
         super({
-            uuid: SENSOR_CHARACTERISTIC,
+            uuid: uuid,
             properties: ['read', 'write', 'notify'],
             value: null,
             descriptors: [
@@ -28,14 +27,15 @@ class MockCharacteristic extends bleno.Characteristic {
 
         this._generator = new Generator();
         this._value = Buffer.alloc(4);
+        this._uuid = uuid;
         this._updateValueCallback = null;
         this._intervalInMillis = secInterval * 1000;
         this._intervalId = null;
     }
 
     onReadRequest(offset, callback) {
-        winston.info('MockCharacteristic: onRead', {
-            value: this._value.toString('ascii')
+        winston.info(`MockCharacteristic ${super.uuid}: onRead`, {
+            value: this._value.readInt8()
         });
 
         callback(this.RESULT_SUCCESS, this._value);
@@ -44,8 +44,8 @@ class MockCharacteristic extends bleno.Characteristic {
     onWriteRequest(data, offset, withoutResponse, callback) {
         this._value = data;
 
-        winston.info('MockCharacteristic: onWrite', {
-            value: this._value.toString('ascii')
+        winston.info(`MockCharacteristic ${this._uuid}: onWrite`, {
+            value: this._value.readInt8()
         });
 
         if (this._updateValueCallback) {
@@ -56,23 +56,23 @@ class MockCharacteristic extends bleno.Characteristic {
     }
 
     onSubscribe(maxValueSize, updateValueCallback) {
-        winston.info('MockCharacteristic: onSubscribe');
+        winston.info(`MockCharacteristic ${this._uuid}: onSubscribe`);
 
         this._updateValueCallback = updateValueCallback;
         this._intervalId = setInterval(() => {
             let number = this._generator.getValue();
-            this._value.write(number);
+            this._value.writeInt8(number);
             this._updateValueCallback(this._value);
 
-            winston.debug('MockCharacteristic: notify', {
-                value: this._value.toString('ascii')
+            winston.debug(`MockCharacteristic ${this._uuid}: notify`, {
+                value: this._value.readInt8()
             });
 
         }, this._intervalInMillis);
     }
 
     onUnsubscribe() {
-        winston.info('MockCharacteristic: onUnsubscribe');
+        winston.info(`MockCharacteristic ${this._uuid}: onUnsubscribe`);
 
         this._updateValueCallback = null;
         clearInterval(this._intervalId);
@@ -83,7 +83,11 @@ class MockCharacteristic extends bleno.Characteristic {
 let mockService = new bleno.PrimaryService({
     uuid: SENSOR_SERVICE,
     characteristics: [
-        new MockCharacteristic(3)
+        new MockCharacteristic('ec11', 3),
+        new MockCharacteristic('ec12', 10),
+        new MockCharacteristic('ec13', 15),
+        new MockCharacteristic('ec14', 10),
+        new MockCharacteristic('ec15', 30)
     ]
 });
 
