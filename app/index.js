@@ -2,11 +2,12 @@
 const bleno = require('bleno'),
       infoService = require('./info-service'),
       mockService = require('./sensor-service'),
+      actuatorService = require('./actuator-service'),
       winston = require('winston');
 
 // Config ---------------------------------------------------------------------
 const PERIPHERAL_NAME = 'plant-a-lot';
-const SERVICES = [infoService, mockService];
+const SERVICES = [infoService, mockService, actuatorService];
 
 process.env['BLENO_DEVICE_NAME'] = PERIPHERAL_NAME;
 
