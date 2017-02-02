@@ -4,25 +4,20 @@ const bleno = require('bleno'),
       winston = require('winston');
 
 // Constants ------------------------------------------------------------------
-const ENV_SENSING_MEASUREMENT = '290c',
-    SENSOR_SERVICE = 'ec10';
+const SENSOR_SERVICE = 'ec10',
+      SOIL_MOISTURE_CHARACTERISTIC = 'ec11',
+      BRIGHTNESS_CHARACTERISTIC = 'ec12',
+      WATER_LEVEL_CHARACTERISTIC = 'ec13',
+      TEMPERATURE_CHARACTERISTIC = 'ec14',
+      HUMIDITY_CHARACTERISTIC = 'ec15';
 
 // Characteristic -------------------------------------------------------------
-class MockCharacteristic extends bleno.Characteristic {
+class SensorCharacteristic extends bleno.Characteristic {
     constructor(uuid, secInterval) {
         super({
             uuid: uuid,
             properties: ['read', 'write', 'notify'],
-            value: null,
-            descriptors: [
-                new bleno.Descriptor({
-                    uuid: ENV_SENSING_MEASUREMENT
-                }),
-                new bleno.Descriptor({
-                    uuid: '2901',
-                    value: 'MockSensor'
-                })
-            ]
+            value: null
         });
 
         this._generator = new Generator();
@@ -34,7 +29,7 @@ class MockCharacteristic extends bleno.Characteristic {
     }
 
     onReadRequest(offset, callback) {
-        winston.info(`MockCharacteristic ${super.uuid}: onRead`, {
+        winston.info(`SensorCharacteristic ${super.uuid}: onRead`, {
             value: this._value.readInt8()
         });
 
@@ -44,7 +39,7 @@ class MockCharacteristic extends bleno.Characteristic {
     onWriteRequest(data, offset, withoutResponse, callback) {
         this._value = data;
 
-        winston.info(`MockCharacteristic ${this._uuid}: onWrite`, {
+        winston.info(`SensorCharacteristic ${this._uuid}: onWrite`, {
             value: this._value.readInt8()
         });
 
@@ -56,7 +51,7 @@ class MockCharacteristic extends bleno.Characteristic {
     }
 
     onSubscribe(maxValueSize, updateValueCallback) {
-        winston.info(`MockCharacteristic ${this._uuid}: onSubscribe`);
+        winston.info(`SensorCharacteristic ${this._uuid}: onSubscribe`);
 
         this._updateValueCallback = updateValueCallback;
         this._intervalId = setInterval(() => {
@@ -64,7 +59,7 @@ class MockCharacteristic extends bleno.Characteristic {
             this._value.writeInt8(number);
             this._updateValueCallback(this._value);
 
-            winston.debug(`MockCharacteristic ${this._uuid}: notify`, {
+            winston.debug(`SensorCharacteristic ${this._uuid}: notify`, {
                 value: this._value.readInt8()
             });
 
@@ -72,7 +67,7 @@ class MockCharacteristic extends bleno.Characteristic {
     }
 
     onUnsubscribe() {
-        winston.info(`MockCharacteristic ${this._uuid}: onUnsubscribe`);
+        winston.info(`SensorCharacteristic ${this._uuid}: onUnsubscribe`);
 
         this._updateValueCallback = null;
         clearInterval(this._intervalId);
@@ -80,16 +75,16 @@ class MockCharacteristic extends bleno.Characteristic {
 }
 
 // Service --------------------------------------------------------------------
-let mockService = new bleno.PrimaryService({
+let sensorService = new bleno.PrimaryService({
     uuid: SENSOR_SERVICE,
     characteristics: [
-        new MockCharacteristic('ec11', 3),
-        new MockCharacteristic('ec12', 10),
-        new MockCharacteristic('ec13', 15),
-        new MockCharacteristic('ec14', 10),
-        new MockCharacteristic('ec15', 30)
+        new SensorCharacteristic(SOIL_MOISTURE_CHARACTERISTIC, 3),
+        new SensorCharacteristic(BRIGHTNESS_CHARACTERISTIC, 10),
+        new SensorCharacteristic(WATER_LEVEL_CHARACTERISTIC, 15),
+        new SensorCharacteristic(TEMPERATURE_CHARACTERISTIC, 10),
+        new SensorCharacteristic(HUMIDITY_CHARACTERISTIC, 30)
     ]
 });
 
 // Exports --------------------------------------------------------------------
-module.exports = mockService;
+module.exports = sensorService;
