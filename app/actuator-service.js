@@ -3,10 +3,11 @@ const bleno = require('bleno'),
     winston = require('winston');
 
 // Constants ------------------------------------------------------------------
-const ACTUATOR_SERVICE = 'ed00',
-    STATUS_CHARACTERISTIC = 'ed01';
+const ACTUATOR_SERVICE = 'ec20',
+    STATUS_CHARACTERISTIC = 'ec21',
+    WATERING_CHARACTERISTIC = 'ed22';
 
-// Characteristic -------------------------------------------------------------
+// Characteristics -------------------------------------------------------------
 class StatusCharacteristic extends bleno.Characteristic {
     constructor(uuid) {
         super({
@@ -44,7 +45,7 @@ class StatusCharacteristic extends bleno.Characteristic {
                 this._status = "'=)'";
                 break;
             default:
-                winston.info(`StatusCharacteristic invalid status value ${this._statusRaw}`);
+                winston.info(`StatusCharacteristic ${this._uuid}: invalid status value ${this._statusRaw}`);
                 break;
         }
 
@@ -57,11 +58,74 @@ class StatusCharacteristic extends bleno.Characteristic {
     }
 }
 
+class WateringCharacteristic extends bleno.Characteristic {
+    constructor(uuid, wateringDuration) {
+        super({
+            uuid: uuid,
+            properties: ['read', 'write'],
+            value: null
+        });
+
+        this._uuid = uuid;
+        this._value = Buffer.alloc(4);
+        this._status = "''";
+        this._statusRaw = -1;
+        this._timeoutId = null;
+        this._wateringDurationInMilli = wateringDuration * 1000;
+    }
+
+    onReadRequest(offset, callback) {
+        winston.info(`ActuatorCharacteristic ${this._uuid}: onRead`, {
+            value: this._value.readInt8()
+        });
+
+        callback(this.RESULT_SUCCESS, this._value);
+    }
+
+    onWriteRequest(data, offset, withoutResponse, callback) {
+        this._value = data;
+        this._statusRaw = data.readInt8();
+
+        winston.info(`WateringCharacteristic ${this._uuid}: onWrite`, {
+            value: this._statusRaw,
+            status: this._status
+        });
+
+        if (this._statusRaw === 1) {
+            this.startWatering();
+        } else {
+            winston.info(`WateringCharacteristic ${this._uuid}: invalid status value ${this._statusRaw}`);
+            this._statusRaw = 0;
+        }
+
+        callback(this.RESULT_SUCCESS);
+    }
+
+    startWatering() {
+        this._status = "Start watering...";
+        winston.info(`WateringCharacteristic ${this._uuid}: Started pump for watering. ` +
+        `This will take ${this._wateringDurationInMilli} ms.`);
+
+        this._timeoutId = setTimeout(() => {
+            this.stopWatering();
+        }, this._wateringDurationInMilli);
+    }
+
+    stopWatering() {
+        this._status = "Stop watering...";
+        this._statusRaw = 0;
+        this._value = Buffer.alloc(4);
+        clearInterval(this._timeoutId);
+        winston.info(`WateringCharacteristic ${this._uuid}: Stopped pump. Watering finished.`);
+    }
+}
+
 // Service --------------------------------------------------------------------
 let actuatorService = new bleno.PrimaryService({
     uuid: ACTUATOR_SERVICE,
     characteristics: [
-        new StatusCharacteristic(STATUS_CHARACTERISTIC)
+        new StatusCharacteristic(STATUS_CHARACTERISTIC),
+        new WateringCharacteristic(WATERING_CHARACTERISTIC, 10)
     ]
 });
 
