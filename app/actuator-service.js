@@ -68,8 +68,7 @@ class WateringCharacteristic extends bleno.Characteristic {
 
         this._uuid = uuid;
         this._value = Buffer.alloc(4);
-        this._status = "''";
-        this._statusRaw = -1;
+        this._statusRaw = 0;
         this._timeoutId = null;
         this._wateringDurationInMilli = wateringDuration * 1000;
     }
@@ -87,24 +86,22 @@ class WateringCharacteristic extends bleno.Characteristic {
         this._statusRaw = data.readInt8();
 
         winston.info(`WateringCharacteristic ${this._uuid}: onWrite`, {
-            value: this._statusRaw,
-            status: this._status
+            value: this._statusRaw
         });
 
         if (this._statusRaw === 1) {
             this.startWatering();
         } else {
             winston.info(`WateringCharacteristic ${this._uuid}: invalid status value ${this._statusRaw}`);
-            this._statusRaw = 0;
+            this.resetStatus();
         }
 
         callback(this.RESULT_SUCCESS);
     }
 
     startWatering() {
-        this._status = "Start watering...";
         winston.info(`WateringCharacteristic ${this._uuid}: Started pump for watering. ` +
-        `This will take ${this._wateringDurationInMilli} ms.`);
+            `This will take ${this._wateringDurationInMilli} ms.`);
 
         this._timeoutId = setTimeout(() => {
             this.stopWatering();
@@ -112,11 +109,14 @@ class WateringCharacteristic extends bleno.Characteristic {
     }
 
     stopWatering() {
-        this._status = "Stop watering...";
-        this._statusRaw = 0;
-        this._value = Buffer.alloc(4);
+        this.resetStatus();
         clearInterval(this._timeoutId);
         winston.info(`WateringCharacteristic ${this._uuid}: Stopped pump. Watering finished.`);
+    }
+
+    resetStatus() {
+        this._statusRaw = 0;
+        this._value = Buffer.alloc(4);
     }
 }
 
