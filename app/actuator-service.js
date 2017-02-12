@@ -5,7 +5,7 @@ const bleno = require('bleno'),
 // Constants ------------------------------------------------------------------
 const ACTUATOR_SERVICE = 'ec20',
     STATUS_CHARACTERISTIC = 'ec21',
-    WATERING_CHARACTERISTIC = 'ed22';
+    WATERING_CHARACTERISTIC = 'ec22';
 
 // Characteristics -------------------------------------------------------------
 class StatusCharacteristic extends bleno.Characteristic {
