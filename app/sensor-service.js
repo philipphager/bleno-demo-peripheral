@@ -78,10 +78,10 @@ class SensorCharacteristic extends bleno.Characteristic {
 let sensorService = new bleno.PrimaryService({
     uuid: SENSOR_SERVICE,
     characteristics: [
-        new SensorCharacteristic(SOIL_MOISTURE_CHARACTERISTIC, 3),
-        new SensorCharacteristic(BRIGHTNESS_CHARACTERISTIC, 10),
-        new SensorCharacteristic(WATER_LEVEL_CHARACTERISTIC, 15),
-        new SensorCharacteristic(TEMPERATURE_CHARACTERISTIC, 10),
+        new SensorCharacteristic(SOIL_MOISTURE_CHARACTERISTIC, 10),
+        new SensorCharacteristic(BRIGHTNESS_CHARACTERISTIC, 20),
+        new SensorCharacteristic(WATER_LEVEL_CHARACTERISTIC, 25),
+        new SensorCharacteristic(TEMPERATURE_CHARACTERISTIC, 15),
         new SensorCharacteristic(HUMIDITY_CHARACTERISTIC, 30)
     ]
 });
