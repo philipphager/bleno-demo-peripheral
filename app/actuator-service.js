@@ -44,6 +44,9 @@ class StatusCharacteristic extends bleno.Characteristic {
             case 2:
                 this._status = "'=)'";
                 break;
+            case 3:
+                this._status = "'none'";
+                break;
             default:
                 winston.info(`StatusCharacteristic ${this._uuid}: invalid status value ${this._statusRaw}`);
                 break;
