@@ -30,7 +30,7 @@ class SensorCharacteristic extends bleno.Characteristic {
 
     onReadRequest(offset, callback) {
         winston.info(`SensorCharacteristic ${super.uuid}: onRead`, {
-            value: this._value.readInt8()
+            value: this._value.readUInt16LE()
         });
 
         callback(this.RESULT_SUCCESS, this._value);
@@ -40,7 +40,7 @@ class SensorCharacteristic extends bleno.Characteristic {
         this._value = data;
 
         winston.info(`SensorCharacteristic ${this._uuid}: onWrite`, {
-            value: this._value.readInt8()
+            value: this._value.readUInt16LE()
         });
 
         if (this._updateValueCallback) {
@@ -56,11 +56,11 @@ class SensorCharacteristic extends bleno.Characteristic {
         this._updateValueCallback = updateValueCallback;
         this._intervalId = setInterval(() => {
             let number = this._generator.getValue();
-            this._value.writeInt8(number);
+            this._value.writeUInt16LE(number);
             this._updateValueCallback(this._value);
 
             winston.debug(`SensorCharacteristic ${this._uuid}: notify`, {
-                value: this._value.readInt8()
+                value: this._value.readUInt16LE()
             });
 
         }, this._intervalInMillis);

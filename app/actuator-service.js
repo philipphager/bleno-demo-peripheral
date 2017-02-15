@@ -24,7 +24,7 @@ class StatusCharacteristic extends bleno.Characteristic {
 
     onReadRequest(offset, callback) {
         winston.info(`ActuatorCharacteristic ${this._uuid}: onRead`, {
-            value: this._value.readInt8()
+            value: this._value.readUInt16LE()
         });
 
         callback(this.RESULT_SUCCESS, this._value);
@@ -32,7 +32,7 @@ class StatusCharacteristic extends bleno.Characteristic {
 
     onWriteRequest(data, offset, withoutResponse, callback) {
         this._value = data;
-        this._statusRaw = data.readInt8();
+        this._statusRaw = data.readUInt16LE();
 
         switch (this._statusRaw) {
             case 0:
@@ -78,7 +78,7 @@ class WateringCharacteristic extends bleno.Characteristic {
 
     onReadRequest(offset, callback) {
         winston.info(`ActuatorCharacteristic ${this._uuid}: onRead`, {
-            value: this._value.readInt8()
+            value: this._value.readUInt16LE()
         });
 
         callback(this.RESULT_SUCCESS, this._value);
@@ -86,7 +86,7 @@ class WateringCharacteristic extends bleno.Characteristic {
 
     onWriteRequest(data, offset, withoutResponse, callback) {
         this._value = data;
-        this._statusRaw = data.readInt8();
+        this._statusRaw = data.readUInt16LE();
 
         winston.info(`WateringCharacteristic ${this._uuid}: onWrite`, {
             value: this._statusRaw
